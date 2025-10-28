@@ -293,7 +293,7 @@ class WireguardFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     private fun getDownloadData(result: Result) {
         scope.launch(Dispatchers.IO) {
             try {
-                val downloadData = futureBackend.await().getStatistics(tunnel(tunnelName)).rxBytes
+                val downloadData = futureBackend.await().getStatistics(tunnel(tunnelName)).totalRx()
                 flutterSuccess(result, downloadData)
             } catch (e: Throwable) {
                 Log.e(TAG, "getDownloadData - ERROR - ${e.message}")
@@ -305,7 +305,7 @@ class WireguardFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     private fun getUploadData(result: Result) {
         scope.launch(Dispatchers.IO) {
             try {
-                val uploadData = futureBackend.await().getStatistics(tunnel(tunnelName)).txBytes
+                val uploadData = futureBackend.await().getStatistics(tunnel(tunnelName)).totalTx()
                 flutterSuccess(result, uploadData)
             } catch (e: Throwable) {
                 Log.e(TAG, "getUploadData - ERROR - ${e.message}")
