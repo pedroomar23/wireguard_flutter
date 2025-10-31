@@ -131,3 +131,5 @@ await wireguard.stopVpn();
 ---
 
 *"WireGuard" is a registered trademark of Jason A. Donenfeld.*
+
+(Refactor commit fix)
