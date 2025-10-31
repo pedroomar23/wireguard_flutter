@@ -6,6 +6,7 @@ import 'package:pigeon/pigeon.dart';
     kotlinOut: 'android/src/main/kotlin/billion/group/wireguard_flutter/Pigeon.kt',
     kotlinOptions: KotlinOptions(
       errorClassName: 'WireGuardFlutterError',
+      package: 'billion.group.wireguard_flutter',
     ),
   ),
 )
