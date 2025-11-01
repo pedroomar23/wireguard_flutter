@@ -4,12 +4,14 @@ class WgPeer {
     required this.allowedIps,
     this.endpoint,
     this.presharedKey,
+    this.persistentKeepalive,
   });
 
   final String publicKey;
   final List<String> allowedIps;
   final String? endpoint;
   final String? presharedKey;
+  final int? persistentKeepalive;
 }
 
 class WgInterface {
@@ -69,6 +71,10 @@ class WgConfig {
         buffer.writeln('Endpoint = ${peer.endpoint}');
       }
 
+      if (peer.persistentKeepalive != null) {
+        buffer.writeln('PersistentKeepalive = ${peer.persistentKeepalive}');
+      }
+
       buffer.writeln('AllowedIPs = ${peer.allowedIps.join(', ')}');
     }
 
@@ -100,12 +106,14 @@ class WgConfigBuilder {
     required List<String> allowedIps,
     String? endpoint,
     String? presharedKey,
+    int? persistentKeepalive,
   }) {
     _peers.add(WgPeer(
       publicKey: publicKey,
       allowedIps: allowedIps,
       endpoint: endpoint,
       presharedKey: presharedKey,
+      persistentKeepalive: persistentKeepalive,
     ));
     return this;
   }
