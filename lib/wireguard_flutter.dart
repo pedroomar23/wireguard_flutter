@@ -1,11 +1,6 @@
-import 'dart:async';
-
-import 'package:flutter/services.dart';
 import 'package:wireguard_flutter/pigeon.dart' as pigeon;
 
-import 'config_builder.dart';
 import 'models.dart';
-export 'config_builder.dart';
 export 'models.dart';
 
 enum VpnStage {
@@ -49,32 +44,12 @@ class WireGuardFlutter {
 
   Future<void> startVpn({
     required String serverAddress,
-    required WgConfig config,
+    required String wgQuickConfig,
     required String providerBundleIdentifier,
   }) {
-    final interfaceConfig = pigeon.WgInterfaceConfig(
-      privateKey: config.interface.privateKey,
-      addresses: config.interface.addresses,
-      dnsServers: config.interface.dnsServers,
-      allowedApplications: config.interface.allowedApplications,
-      disallowedApplications: config.interface.disallowedApplications,
-    );
-
-    final peers = config.peers.map((peer) {
-      return pigeon.WgPeerConfig(
-        publicKey: peer.publicKey,
-        presharedKey: peer.presharedKey,
-        endpoint: peer.endpoint,
-        allowedIps: peer.allowedIps,
-        persistentKeepalive: peer.persistentKeepalive,
-      );
-    }).toList();
-
     return _api.startVpn(
-      config.interface.privateKey, // A name for the interface
       serverAddress,
-      interfaceConfig,
-      peers,
+      wgQuickConfig,
       providerBundleIdentifier,
     );
   }

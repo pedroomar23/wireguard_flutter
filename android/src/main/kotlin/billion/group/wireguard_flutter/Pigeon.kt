@@ -90,68 +90,6 @@ data class Stats (
   }
 }
 
-/** Generated class from Pigeon that represents data sent in messages. */
-data class WgInterfaceConfig (
-  val privateKey: String? = null,
-  val addresses: List<String?>? = null,
-  val dnsServers: List<String?>? = null,
-  val allowedApplications: List<String?>? = null,
-  val disallowedApplications: List<String?>? = null
-
-) {
-  companion object {
-    @Suppress("UNCHECKED_CAST")
-    fun fromList(list: List<Any?>): WgInterfaceConfig {
-      val privateKey = list[0] as String?
-      val addresses = list[1] as List<String?>?
-      val dnsServers = list[2] as List<String?>?
-      val allowedApplications = list[3] as List<String?>?
-      val disallowedApplications = list[4] as List<String?>?
-      return WgInterfaceConfig(privateKey, addresses, dnsServers, allowedApplications, disallowedApplications)
-    }
-  }
-  fun toList(): List<Any?> {
-    return listOf<Any?>(
-      privateKey,
-      addresses,
-      dnsServers,
-      allowedApplications,
-      disallowedApplications,
-    )
-  }
-}
-
-/** Generated class from Pigeon that represents data sent in messages. */
-data class WgPeerConfig (
-  val publicKey: String? = null,
-  val presharedKey: String? = null,
-  val endpoint: String? = null,
-  val allowedIps: List<String?>? = null,
-  val persistentKeepalive: Long? = null
-
-) {
-  companion object {
-    @Suppress("UNCHECKED_CAST")
-    fun fromList(list: List<Any?>): WgPeerConfig {
-      val publicKey = list[0] as String?
-      val presharedKey = list[1] as String?
-      val endpoint = list[2] as String?
-      val allowedIps = list[3] as List<String?>?
-      val persistentKeepalive = list[4].let { if (it is Int) it.toLong() else it as Long? }
-      return WgPeerConfig(publicKey, presharedKey, endpoint, allowedIps, persistentKeepalive)
-    }
-  }
-  fun toList(): List<Any?> {
-    return listOf<Any?>(
-      publicKey,
-      presharedKey,
-      endpoint,
-      allowedIps,
-      persistentKeepalive,
-    )
-  }
-}
-
 @Suppress("UNCHECKED_CAST")
 private object WireGuardHostApiCodec : StandardMessageCodec() {
   override fun readValueOfType(type: Byte, buffer: ByteBuffer): Any? {
@@ -164,16 +102,6 @@ private object WireGuardHostApiCodec : StandardMessageCodec() {
       129.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
           Stats.fromList(it)
-        }
-      }
-      130.toByte() -> {
-        return (readValue(buffer) as? List<Any?>)?.let {
-          WgInterfaceConfig.fromList(it)
-        }
-      }
-      131.toByte() -> {
-        return (readValue(buffer) as? List<Any?>)?.let {
-          WgPeerConfig.fromList(it)
         }
       }
       else -> super.readValueOfType(type, buffer)
@@ -189,14 +117,6 @@ private object WireGuardHostApiCodec : StandardMessageCodec() {
         stream.write(129)
         writeValue(stream, value.toList())
       }
-      is WgInterfaceConfig -> {
-        stream.write(130)
-        writeValue(stream, value.toList())
-      }
-      is WgPeerConfig -> {
-        stream.write(131)
-        writeValue(stream, value.toList())
-      }
       else -> super.writeValue(stream, value)
     }
   }
@@ -205,7 +125,7 @@ private object WireGuardHostApiCodec : StandardMessageCodec() {
 /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
 interface WireGuardHostApi {
   fun initialize(interfaceName: String, callback: (Result<Unit>) -> Unit)
-  fun startVpn(interfaceName: String, serverAddress: String, interfaceConfig: WgInterfaceConfig, peers: List<WgPeerConfig?>, providerBundleIdentifier: String, callback: (Result<Unit>) -> Unit)
+  fun startVpn(serverAddress: String, wgQuickConfig: String, providerBundleIdentifier: String, callback: (Result<Unit>) -> Unit)
   fun stopVpn(callback: (Result<Unit>) -> Unit)
   fun stage(callback: (Result<String>) -> Unit)
   fun refreshStage(callback: (Result<Unit>) -> Unit)
@@ -244,12 +164,10 @@ interface WireGuardHostApi {
         if (api != null) {
           channel.setMessageHandler { message, reply ->
             val args = message as List<Any?>
-            val interfaceNameArg = args[0] as String
-            val serverAddressArg = args[1] as String
-            val interfaceConfigArg = args[2] as WgInterfaceConfig
-            val peersArg = args[3] as List<WgPeerConfig?>
-            val providerBundleIdentifierArg = args[4] as String
-            api.startVpn(interfaceNameArg, serverAddressArg, interfaceConfigArg, peersArg, providerBundleIdentifierArg) { result: Result<Unit> ->
+            val serverAddressArg = args[0] as String
+            val wgQuickConfigArg = args[1] as String
+            val providerBundleIdentifierArg = args[2] as String
+            api.startVpn(serverAddressArg, wgQuickConfigArg, providerBundleIdentifierArg) { result: Result<Unit> ->
               val error = result.exceptionOrNull()
               if (error != null) {
                 reply.reply(wrapError(error))

@@ -72,88 +72,6 @@ class Stats {
   }
 }
 
-class WgInterfaceConfig {
-  WgInterfaceConfig({
-    this.privateKey,
-    this.addresses,
-    this.dnsServers,
-    this.allowedApplications,
-    this.disallowedApplications,
-  });
-
-  String? privateKey;
-
-  List<String?>? addresses;
-
-  List<String?>? dnsServers;
-
-  List<String?>? allowedApplications;
-
-  List<String?>? disallowedApplications;
-
-  Object encode() {
-    return <Object?>[
-      privateKey,
-      addresses,
-      dnsServers,
-      allowedApplications,
-      disallowedApplications,
-    ];
-  }
-
-  static WgInterfaceConfig decode(Object result) {
-    result as List<Object?>;
-    return WgInterfaceConfig(
-      privateKey: result[0] as String?,
-      addresses: (result[1] as List<Object?>?)?.cast<String?>(),
-      dnsServers: (result[2] as List<Object?>?)?.cast<String?>(),
-      allowedApplications: (result[3] as List<Object?>?)?.cast<String?>(),
-      disallowedApplications: (result[4] as List<Object?>?)?.cast<String?>(),
-    );
-  }
-}
-
-class WgPeerConfig {
-  WgPeerConfig({
-    this.publicKey,
-    this.presharedKey,
-    this.endpoint,
-    this.allowedIps,
-    this.persistentKeepalive,
-  });
-
-  String? publicKey;
-
-  String? presharedKey;
-
-  String? endpoint;
-
-  List<String?>? allowedIps;
-
-  int? persistentKeepalive;
-
-  Object encode() {
-    return <Object?>[
-      publicKey,
-      presharedKey,
-      endpoint,
-      allowedIps,
-      persistentKeepalive,
-    ];
-  }
-
-  static WgPeerConfig decode(Object result) {
-    result as List<Object?>;
-    return WgPeerConfig(
-      publicKey: result[0] as String?,
-      presharedKey: result[1] as String?,
-      endpoint: result[2] as String?,
-      allowedIps: (result[3] as List<Object?>?)?.cast<String?>(),
-      persistentKeepalive: result[4] as int?,
-    );
-  }
-}
-
 class _WireGuardHostApiCodec extends StandardMessageCodec {
   const _WireGuardHostApiCodec();
   @override
@@ -163,12 +81,6 @@ class _WireGuardHostApiCodec extends StandardMessageCodec {
       writeValue(buffer, value.encode());
     } else if (value is Stats) {
       buffer.putUint8(129);
-      writeValue(buffer, value.encode());
-    } else if (value is WgInterfaceConfig) {
-      buffer.putUint8(130);
-      writeValue(buffer, value.encode());
-    } else if (value is WgPeerConfig) {
-      buffer.putUint8(131);
       writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
@@ -182,10 +94,6 @@ class _WireGuardHostApiCodec extends StandardMessageCodec {
         return InstalledApp.decode(readValue(buffer)!);
       case 129: 
         return Stats.decode(readValue(buffer)!);
-      case 130: 
-        return WgInterfaceConfig.decode(readValue(buffer)!);
-      case 131: 
-        return WgPeerConfig.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
     }
@@ -224,7 +132,7 @@ class WireGuardHostApi {
     }
   }
 
-  Future<void> startVpn(String interfaceName, String serverAddress, WgInterfaceConfig interfaceConfig, List<WgPeerConfig?> peers, String providerBundleIdentifier) async {
+  Future<void> startVpn(String serverAddress, String wgQuickConfig, String providerBundleIdentifier) async {
     const String __pigeon_channelName = 'dev.flutter.pigeon.wireguard_flutter.WireGuardHostApi.startVpn';
     final BasicMessageChannel<Object?> __pigeon_channel = BasicMessageChannel<Object?>(
       __pigeon_channelName,
@@ -232,7 +140,7 @@ class WireGuardHostApi {
       binaryMessenger: __pigeon_binaryMessenger,
     );
     final List<Object?>? __pigeon_replyList =
-        await __pigeon_channel.send(<Object?>[interfaceName, serverAddress, interfaceConfig, peers, providerBundleIdentifier]) as List<Object?>?;
+        await __pigeon_channel.send(<Object?>[serverAddress, wgQuickConfig, providerBundleIdentifier]) as List<Object?>?;
     if (__pigeon_replyList == null) {
       throw _createConnectionError(__pigeon_channelName);
     } else if (__pigeon_replyList.length > 1) {

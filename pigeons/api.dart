@@ -22,22 +22,6 @@ class Stats {
   int? tx;
 }
 
-class WgInterfaceConfig {
-  String? privateKey;
-  List<String?>? addresses;
-  List<String?>? dnsServers;
-  List<String?>? allowedApplications;
-  List<String?>? disallowedApplications;
-}
-
-class WgPeerConfig {
-  String? publicKey;
-  String? presharedKey;
-  String? endpoint;
-  List<String?>? allowedIps;
-  int? persistentKeepalive;
-}
-
 @HostApi()
 abstract class WireGuardHostApi {
   @async
@@ -45,10 +29,8 @@ abstract class WireGuardHostApi {
 
   @async
   void startVpn(
-    String interfaceName,
     String serverAddress,
-    WgInterfaceConfig interfaceConfig,
-    List<WgPeerConfig?> peers,
+    String wgQuickConfig,
     String providerBundleIdentifier,
   );
 
