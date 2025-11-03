@@ -134,10 +134,10 @@ class WireguardFlutterPlugin : FlutterPlugin, ActivityAware, PluginRegistry.Acti
                 interfaceConfig.addresses?.let { interfaceBuilder.parseAddresses(it.filterNotNull().joinToString(", ")) }
                 interfaceConfig.dnsServers?.let { interfaceBuilder.parseDnsServers(it.filterNotNull().joinToString(", ")) }
                 interfaceConfig.allowedApplications?.let { apps ->
-                    apps.filterNotNull().forEach { app -> interfaceBuilder.addIncludedApplication(app) }
+                    interfaceBuilder.parseIncludedApplications(apps.filterNotNull().joinToString(", "))
                 }
                 interfaceConfig.disallowedApplications?.let { apps ->
-                    apps.filterNotNull().forEach { app -> interfaceBuilder.addExcludedApplication(app) }
+                    interfaceBuilder.parseExcludedApplications(apps.filterNotNull().joinToString(", "))
                 }
                 val nativeInterface = interfaceBuilder.build()
 
