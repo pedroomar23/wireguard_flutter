@@ -130,16 +130,24 @@ class WgConfigBuilder {
     return this;
   }
 
-  WgConfig build() {
+  WgConfig build({required String providerBundleIdentifier}) {
     if (_privateKey == null) {
       throw Exception('Interface private key is required.');
     }
+
+    final finalAllowedApplications = List<String>.from(_allowedApplications);
+    if (finalAllowedApplications.isNotEmpty) {
+      if (!finalAllowedApplications.contains(providerBundleIdentifier)) {
+        finalAllowedApplications.add(providerBundleIdentifier);
+      }
+    }
+
     return WgConfig(
       interface: WgInterface(
         privateKey: _privateKey!,
         addresses: _addresses,
         dnsServers: _dnsServers,
-        allowedApplications: _allowedApplications,
+        allowedApplications: finalAllowedApplications,
         disallowedApplications: _disallowedApplications,
       ),
       peers: _peers,
